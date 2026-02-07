@@ -28,6 +28,10 @@ export CUDA_HOME=/usr/local/cuda-12.4
 export PATH=/usr/local/cuda-12.4/bin:$PATH
 export LD_LIBRARY_PATH=/usr/local/cuda-12.4/lib64:$LD_LIBRARY_PATH
 
+# Hint CMake pour trouver libnvrtc dans CUDA 12.4
+export CUDAToolkit_ROOT=/usr/local/cuda-12.4
+export CMAKE_PREFIX_PATH=/usr/local/cuda-12.4
+
 export TORCH_CUDA_ARCH_LIST="7.0"
 export MAX_JOBS=$(nproc)
 export NVCC_THREADS=$(nproc)
