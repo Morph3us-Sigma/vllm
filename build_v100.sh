@@ -21,15 +21,33 @@ echo -e "${BLUE}╚════════════════════�
 # ============================================================================
 # 1. Variables de Compilation CRITIQUES (Patch #1.1)
 # ============================================================================
+
+# CRITIQUE : CUDA 13.0 ne supporte PAS SM 7.0 (Volta)
+# Forcer l'utilisation de CUDA 12.4 pour la compilation
+export CUDA_HOME=/usr/local/cuda-12.4
+export PATH=/usr/local/cuda-12.4/bin:$PATH
+export LD_LIBRARY_PATH=/usr/local/cuda-12.4/lib64:$LD_LIBRARY_PATH
+
 export TORCH_CUDA_ARCH_LIST="7.0"
 export MAX_JOBS=$(nproc)
 export NVCC_THREADS=$(nproc)
 export CMAKE_BUILD_PARALLEL_LEVEL=$(nproc)
 
 echo -e "${BLUE}[CONFIG] Variables de compilation V100 :${NC}"
+echo -e "  - CUDA_HOME: ${YELLOW}${CUDA_HOME}${NC}"
 echo -e "  - TORCH_CUDA_ARCH_LIST: ${YELLOW}${TORCH_CUDA_ARCH_LIST}${NC}"
 echo -e "  - MAX_JOBS: ${YELLOW}${MAX_JOBS}${NC}"
 echo -e "  - NVCC_THREADS: ${YELLOW}${NVCC_THREADS}${NC}"
+
+# Vérification version NVCC
+NVCC_VERSION=$(nvcc --version | grep "release" | awk '{print $6}' | cut -d',' -f1)
+echo -e "${BLUE}[CHECK] Version NVCC: ${YELLOW}${NVCC_VERSION}${NC}"
+
+if [[ "$NVCC_VERSION" == "13.0" ]]; then
+    echo -e "${RED}[ERROR] NVCC 13.0 ne supporte PAS SM 7.0 (Volta) !${NC}"
+    echo -e "${RED}[ERROR] Vérifiez que CUDA_HOME pointe vers CUDA 12.4${NC}"
+    exit 1
+fi
 
 # ============================================================================
 # 2. Variables Runtime NCCL (Patch #1.2)
