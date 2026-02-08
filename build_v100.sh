@@ -23,14 +23,14 @@ echo -e "${BLUE}╚════════════════════�
 # ============================================================================
 
 # CRITIQUE : CUDA 13.0 ne supporte PAS SM 7.0 (Volta)
-# Forcer l'utilisation de CUDA 12.4 pour la compilation
-export CUDA_HOME=/usr/local/cuda-12.4
-export PATH=/usr/local/cuda-12.4/bin:$PATH
-export LD_LIBRARY_PATH=/usr/local/cuda-12.4/lib64:$LD_LIBRARY_PATH
+# Forcer l'utilisation de CUDA 12.8 pour la compilation (match PyTorch cu128)
+export CUDA_HOME=/usr/local/cuda-12.8
+export PATH=/usr/local/cuda-12.8/bin:$PATH
+export LD_LIBRARY_PATH=/usr/local/cuda-12.8/lib64:$LD_LIBRARY_PATH
 
-# Hint CMake pour trouver libnvrtc dans CUDA 12.4
-export CUDAToolkit_ROOT=/usr/local/cuda-12.4
-export CMAKE_PREFIX_PATH=/usr/local/cuda-12.4
+# Hint CMake pour trouver libnvrtc dans CUDA 12.8
+export CUDAToolkit_ROOT=/usr/local/cuda-12.8
+export CMAKE_PREFIX_PATH=/usr/local/cuda-12.8
 
 export TORCH_CUDA_ARCH_LIST="7.0"
 export MAX_JOBS=$(nproc)
@@ -49,7 +49,7 @@ echo -e "${BLUE}[CHECK] Version NVCC: ${YELLOW}${NVCC_VERSION}${NC}"
 
 if [[ "$NVCC_VERSION" == "13.0" ]]; then
     echo -e "${RED}[ERROR] NVCC 13.0 ne supporte PAS SM 7.0 (Volta) !${NC}"
-    echo -e "${RED}[ERROR] Vérifiez que CUDA_HOME pointe vers CUDA 12.4${NC}"
+    echo -e "${RED}[ERROR] Vérifiez que CUDA_HOME pointe vers CUDA 12.8${NC}"
     exit 1
 fi
 

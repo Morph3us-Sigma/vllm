@@ -16,15 +16,28 @@ Appliquer **uniquement** les patchs strictement nécessaires pour V100, en privi
 
 ### 1. Patchs CRITIQUES (Obligatoires)
 
-#### 1.1 Variables de Compilation
+#### 1.1 Variables de Compilation CUDA
 ```bash
+# CRITIQUE : Utiliser CUDA 12.8 (dernière version avec support Volta)
+export CUDA_HOME=/usr/local/cuda-12.8
+export PATH=/usr/local/cuda-12.8/bin:$PATH
+export LD_LIBRARY_PATH=/usr/local/cuda-12.8/lib64:$LD_LIBRARY_PATH
+
+# Hints CMake
+export CUDAToolkit_ROOT=/usr/local/cuda-12.8
+export CMAKE_PREFIX_PATH=/usr/local/cuda-12.8
+
+# Architecture cible
 export TORCH_CUDA_ARCH_LIST="7.0"
 export MAX_JOBS=$(nproc)
 export NVCC_THREADS=$(nproc)
 export CMAKE_BUILD_PARALLEL_LEVEL=$(nproc)
 ```
 
-**Raison** : Force la génération de code CUDA pour SM 7.0 (Volta)
+**Raison** :
+- **CUDA 13.0 ne supporte PAS SM 7.0** - Erreur `Unsupported gpu architecture 'compute_70'`
+- **CUDA 12.8 est optimal** : Match parfait avec PyTorch 2.10.0+cu128, dernière version feature-complete pour Volta
+- **Alternative** : CUDA 12.4 fonctionne aussi mais 12.8 réduit risques d'incompatibilités runtime
 
 #### 1.2 Variables Runtime NCCL
 ```bash
