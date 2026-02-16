@@ -176,11 +176,13 @@ This configuration has been tested and validated on:
 **Software** :
 - Ubuntu 24.04 LTS
 - CUDA Toolkit 12.8.93
-- CUDA Driver R580.126.09 (CUDA 13 capable)
+- CUDA Driver 570.211.01 (R570 datacenter, dernière version compatible V100)
 - Python 3.12
 - PyTorch 2.10.0+cu128
+- torchvision 0.25.0+cu128
 - xformers 0.0.34
 - transformers 4.51.1
+- LMDeploy 0.12.1
 
 **Tests** :
 - ✅ Single-GPU : Qwen-0.5B (coherent output, 55 tokens/s)
@@ -246,6 +248,19 @@ nvcc fatal: Unsupported gpu architecture 'compute_70'
 
 ## 📋 Version History
 
+### v0.9.3-v100-pytorch2.10 (16/02/2026)
+
+**Commit** : `6afa36804` ([GitHub](https://github.com/Morph3us-Sigma/vllm/commit/6afa36804))
+
+- ✅ **PyTorch Stack Alignment** : Mise à jour des dépendances pour refléter Stack Platinum validée 10/02/2026
+  - `torch`: 2.7.0 → 2.10.0+cu128
+  - `torchvision`: 0.22.0 → 0.25.0+cu128
+  - `xformers`: 0.0.30 → 0.0.34 (compatible V100 Volta SM 7.0)
+  - `torchaudio`: 2.7.0 → 2.11.0.dev20260204+cu128
+- ✅ **Fichiers modifiés** : `pyproject.toml`, `requirements/build.txt`, `requirements/cuda.txt`
+- 📌 **Note** : Recompilation recommandée pour éliminer warnings pip (non bloquant)
+- 📌 **Build wheel** : `./build_v100.sh` (~15-20 min)
+
 ### v0.9.2-v100-cuda12.8 (08/02/2026)
 
 - ✅ CUDA 12.8 configuration
@@ -286,6 +301,6 @@ Same as vLLM project (Apache 2.0)
 
 ---
 
-**Last updated** : February 8, 2026
+**Last updated** : February 16, 2026
 **Maintainer** : Morph3us Sigma (morph3us.sigma@gmail.com)
-**Status** : ✅ Production Ready
+**Status** : ✅ Production Ready (Recompilation recommandée pour sync PyTorch 2.10.0)
