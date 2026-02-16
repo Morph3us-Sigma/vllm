@@ -30,6 +30,7 @@ nvcc fatal: Unsupported gpu architecture 'compute_70'
 ### Solution : CUDA 12.8
 
 **CUDA 12.8** is the optimal choice for V100:
+
 - ✅ Last feature-complete CUDA version with Volta support
 - ✅ Perfect match with PyTorch 2.10.0+cu128
 - ✅ Latest libraries (cuBLAS 12.8.4, cuSPARSE 12.5.8, etc.)
@@ -46,12 +47,7 @@ nvcc fatal: Unsupported gpu architecture 'compute_70'
    - Configures compilation flags for SM 7.0
    - Builds wheel with proper NCCL settings
 
-2. **`V100_PATCHES_STRATEGY.md`** : Strategy documentation
-   - Minimal patches approach
-   - Environment variables explained
-   - Troubleshooting guide
-
-3. **`README_V100.md`** : This file
+2. **`README_V100.md`** : This file
 
 ### What We DON'T Modify
 
@@ -108,6 +104,7 @@ python3.12 -c "from vllm import LLM; \
 ```
 
 **Expected** :
+
 - Backend: XFormers (auto-selected)
 - Engine: V0 (fallback for SM < 8.0)
 - Coherent text output
@@ -125,6 +122,7 @@ python3.12 -c "from vllm import LLM; \
 ```
 
 **Expected** :
+
 - NCCL 2.27.5 initialized (2 ranks)
 - Model: ~6.8 GiB per GPU
 - Coherent text output
@@ -170,10 +168,12 @@ export VLLM_USE_FLASHINFER_MOE_FP16=0
 This configuration has been tested and validated on:
 
 **Hardware** :
+
 - NVIDIA DGX-1 (8× Tesla V100 16GB)
 - SM 7.0 (Volta)
 
 **Software** :
+
 - Ubuntu 24.04 LTS
 - CUDA Toolkit 12.8.93
 - CUDA Driver 570.211.01 (R570 datacenter, dernière version compatible V100)
@@ -185,6 +185,7 @@ This configuration has been tested and validated on:
 - LMDeploy 0.12.1
 
 **Tests** :
+
 - ✅ Single-GPU : Qwen-0.5B (coherent output, 55 tokens/s)
 - ✅ Multi-GPU : Mistral-7B TP=2 (coherent output, 28 tokens/s)
 - ✅ NCCL stable
@@ -207,6 +208,7 @@ nvcc fatal: Unsupported gpu architecture 'compute_70'
 **Symptoms** : Generated text contains random characters or `...Strings...`
 
 **Solutions** :
+
 1. Verify `dtype="half"` (NOT bfloat16 on V100)
 2. Let vLLM auto-select backend (XFormers optimal for V100)
 3. Rebuild with CUDA 12.8 (not 13.0)
@@ -216,21 +218,49 @@ nvcc fatal: Unsupported gpu architecture 'compute_70'
 **Symptoms** : `ncclInternalError` or `illegal memory access`
 
 **Solutions** :
+
 1. Set `NCCL_CUMEM_ENABLE=0`
 2. Set `NCCL_PROTO=simple`
 3. Verify both GPUs available: `nvidia-smi`
 
 ---
 
+## ⚙️ Advanced Tuning (Optional)
+
+These settings were identified during the R&D phase and might be useful for specific models or to resolve rare resource issues.
+
+### Triton Optimization for Volta
+
+If you encounter `OutOfResources` or `illegal memory access` with Triton kernels (e.g., FusedMoE), you can try reducing the parallelism stage in the vLLM source code (not recommended unless necessary) :
+
+- **num_stages** : Set to `1` (instead of 2 or 4)
+- **num_warps** : Set to `4`
+
+_Reason_: V100 has less shared memory per SM compared to Ampere/Hopper.
+
+### Alternative Attention Backends
+
+The default and recommended backend is `XFORMERS`. However, if you experience stability issues, you can fallback to PyTorch native SDPA:
+
+```bash
+export VLLM_ATTENTION_BACKEND=TORCH_SDPA
+```
+
+_Note_: `TORCH_SDPA` is often a reliable fallback if XFormers exhibits edge-case bugs on SM 7.0.
+
+---
+
 ## 📚 Documentation
 
 **Internal Docs** (HighBrain project) :
+
 - [TN-001: V100 Hybrid Stack Strategy](../../docs/TECH_NOTES/TN-001-v100-hybrid-stack.md)
 - [TN-003: CUDA 13 Volta Deprecation](../../docs/TECH_NOTES/TN-003-cuda-13-volta-deprecation.md)
 - [Plan-310 Session 08/02/2026](../../docs/PLANS/plan-310-Session-08-02-2026.md)
 - [Platinum Stack Installation](../../docs/STANDARDS/PLATINUM-STACK-INSTALLATION.md)
 
 **vLLM Official** :
+
 - https://github.com/vllm-project/vllm
 - https://docs.vllm.ai/
 

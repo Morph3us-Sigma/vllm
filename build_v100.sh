@@ -2,7 +2,7 @@
 # Script de Compilation vLLM v0.9.2 pour Tesla V100 (SM 7.0)
 # Date: 07/02/2026
 # Auteur: Morph3us & AI.IDE
-# Référence: V100_PATCHES_STRATEGY.md
+# Référence: README_V100.md
 
 set -e
 
@@ -66,7 +66,8 @@ echo -e "  - NCCL_PROTO: ${YELLOW}${NCCL_PROTO}${NC}"
 # ============================================================================
 # 3. Backend Attention par Défaut (Patch #1.3)
 # ============================================================================
-export VLLM_ATTENTION_BACKEND=TORCH_SDPA
+# XFORMERS est optimal pour V100 (SM 7.0)
+export VLLM_ATTENTION_BACKEND=XFORMERS
 
 echo -e "${BLUE}[CONFIG] Backend Attention :${NC}"
 echo -e "  - VLLM_ATTENTION_BACKEND: ${YELLOW}${VLLM_ATTENTION_BACKEND}${NC}"
@@ -162,7 +163,7 @@ echo -e "${GREEN}║  ✅ BUILD TERMINÉ AVEC SUCCÈS                           
 echo -e "${GREEN}╠════════════════════════════════════════════════════════════╣${NC}"
 echo -e "${GREEN}║  Version: vLLM v0.9.2 Custom V100                         ║${NC}"
 echo -e "${GREEN}║  Architecture: SM 7.0 (Tesla V100)                        ║${NC}"
-echo -e "${GREEN}║  Backend Attention: TORCH_SDPA                            ║${NC}"
+echo -e "${GREEN}║  Backend Attention: XFORMERS                              ║${NC}"
 echo -e "${GREEN}║  NCCL: CUMEM_ENABLE=0, PROTO=simple                       ║${NC}"
 echo -e "${GREEN}╠════════════════════════════════════════════════════════════╣${NC}"
 echo -e "${GREEN}║  📝 Logs: ${LOG_FILE}${NC}"
